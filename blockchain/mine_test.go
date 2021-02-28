@@ -2,6 +2,8 @@ package blockchain_test
 
 import (
 	"blockchain_example/blockchain"
+	"crypto/sha256"
+	"fmt"
 	"hash"
 	"testing"
 
@@ -52,4 +54,20 @@ func Test_MineBlock_MeetsHardness(t *testing.T) {
 	blockchain.MineBlock(nil, 0, "", 4, hashFactorySpy.getHash)
 
 	require.Equal(t, 4, hashFactorySpy.calledGetHash)
+}
+
+func Test_MineBlock_FirstBlock(t *testing.T) {
+	result, err := blockchain.MineBlock(nil, 0, "First Data", 1, sha256.New)
+
+	require.Nil(t, err)
+	fmt.Printf("MiningVariable: %d\n", result.MiningVariable)
+}
+
+func Test_MineBlock_Second(t *testing.T) {
+	first, err := blockchain.MineBlock(nil, 0, "First Data", 1, sha256.New)
+	require.Nil(t, err)
+
+	second, err := blockchain.MineBlock(first.Hash, 1, "Second Data", 1, sha256.New)
+
+	fmt.Printf("MiningVariable: %d\n", second.MiningVariable)
 }
