@@ -46,3 +46,38 @@ func Test_BlockIsValid_HashIncorrect(t *testing.T) {
 	hasher := fixedHash{hashResult: []byte{'0', '0', 'q'}}
 	require.False(t, blockchain.IsValid(block1, block2, 2, hasher))
 }
+
+func Test_FirstBlockIsValid_Happy(t *testing.T) {
+	block := blockchain.Block{Index: 0, PreviousHash: nil, Hash: []byte{'0', '0', 'q'}}
+	hasher := fixedHash{hashResult: block.Hash}
+
+	require.True(t, blockchain.FirstBlockIsValid(block, 2, hasher))
+}
+
+func Test_FirstBlockIsValid_BadIndex(t *testing.T) {
+	block := blockchain.Block{Index: 1, PreviousHash: nil, Hash: []byte{'0', '0', 'q'}}
+	hasher := fixedHash{hashResult: block.Hash}
+
+	require.False(t, blockchain.FirstBlockIsValid(block, 2, hasher))
+}
+
+func Test_FirstBlockIsValid_BadPreviousHash(t *testing.T) {
+	block := blockchain.Block{Index: 0, PreviousHash: []byte{}, Hash: []byte{'0', '0', 'q'}}
+	hasher := fixedHash{hashResult: block.Hash}
+
+	require.False(t, blockchain.FirstBlockIsValid(block, 2, hasher))
+}
+
+func Test_FirstBlockIsValid_HashNotHardEnough(t *testing.T) {
+	block := blockchain.Block{Index: 0, PreviousHash: nil, Hash: []byte{'0', '0', 'q'}}
+	hasher := fixedHash{hashResult: block.Hash}
+
+	require.False(t, blockchain.FirstBlockIsValid(block, 3, hasher))
+}
+
+func Test_FirstBlockIsValid_HashIncorrect(t *testing.T) {
+	block := blockchain.Block{Index: 0, PreviousHash: nil, Hash: []byte{'0', '0', 'c'}}
+
+	hasher := fixedHash{hashResult: []byte{'0', '0', 'q'}}
+	require.False(t, blockchain.FirstBlockIsValid(block, 2, hasher))
+}
