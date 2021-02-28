@@ -16,7 +16,7 @@ type Block struct {
 }
 
 func int64ToBytes(input int64) []byte {
-	result := []byte{}
+	result := make([]byte, 8)
 	binary.LittleEndian.PutUint64(result, uint64(input))
 	return result
 }
