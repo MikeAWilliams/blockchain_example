@@ -1,5 +1,7 @@
 package blockchain
 
+import "hash"
+
 func sliceEqual(one []byte, two []byte) bool {
 	if len(one) != len(two) {
 		return false
@@ -12,7 +14,7 @@ func sliceEqual(one []byte, two []byte) bool {
 	return true
 }
 
-func IsValid(previous Block, block Block, requiredLeadingZeros int) bool {
+func IsValid(previous Block, block Block, requiredLeadingZeros int, hasher hash.Hash) bool {
 	if previous.Index+1 != block.Index {
 		return false
 	}
@@ -20,6 +22,13 @@ func IsValid(previous Block, block Block, requiredLeadingZeros int) bool {
 		return false
 	}
 	if !HashIsHardEnough(block.Hash, requiredLeadingZeros) {
+		return false
+	}
+	expectedHash, err := block.ComputeHash(hasher)
+	if nil != err {
+		return false
+	}
+	if !sliceEqual(expectedHash, block.Hash) {
 		return false
 	}
 	return true
