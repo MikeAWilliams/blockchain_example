@@ -22,7 +22,7 @@ func NewNode(name string, network *network.Network, requiredZeros int, hashFacto
 }
 
 func (n *Node) NewData(data string) {
-	go n.mine(data)
+	go n.mine(n.name + "-" + data)
 }
 
 func (n *Node) mine(data string) {
@@ -35,8 +35,10 @@ func (n *Node) mine(data string) {
 	}
 
 	newBlock, _ := blockchain.MineBlock(previousHash, int64(len(n.chain)-1), data, n.requiredLeadingZeros, n.hashFactory)
-	n.chain = append(n.chain, newBlock)
-	n.network.PostNewBlock(newBlock)
+	if 0 == len(n.chain) || blockchain.IsValid(n.chain[len(n.chain)-1], newBlock, n.requiredLeadingZeros, n.hashFactory()) {
+		n.chain = append(n.chain, newBlock)
+		n.network.PostNewBlock(newBlock)
+	}
 }
 
 func (n *Node) NewBlock(block blockchain.Block) {
@@ -60,32 +62,9 @@ func (n *Node) GetBlockchain() blockchain.Blockchain {
 	return n.chain
 }
 
-func (n *Node) getValidBlockchains(chains []blockchain.Blockchain) []blockchain.Blockchain {
-	result := []blockchain.Blockchain{}
-
-	for _, chain := range chains {
-		if blockchain.ChainIsValid(chain, n.requiredLeadingZeros, n.hashFactory) {
-			result = append(result, chain)
-		}
-	}
-
-	return result
-}
-
-func getMostValidBlockchain(validChains []blockchain.Blockchain) blockchain.Blockchain {
-	var longest blockchain.Blockchain
-	for _, chain := range validChains {
-		if len(chain) > len(longest) {
-			longest = chain
-		}
-	}
-	return longest
-}
-
 func (n *Node) InitilizeBlockChain() {
 	allChains := n.network.GetBlochains()
-	validChains := n.getValidBlockchains(allChains)
-	n.chain = getMostValidBlockchain(validChains)
+	n.chain = blockchain.GetMostValidBlockChain(allChains, n.requiredLeadingZeros, n.hashFactory)
 }
 
 func (n *Node) RegisterToNetwork() {

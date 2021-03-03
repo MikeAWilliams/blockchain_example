@@ -69,3 +69,30 @@ func ChainIsValid(chain Blockchain, requiredLeadingZeros int, hashFactory HashFa
 	}
 	return true
 }
+
+func getLongestChain(validChains []Blockchain) Blockchain {
+	var longest Blockchain
+	for _, chain := range validChains {
+		if len(chain) > len(longest) {
+			longest = chain
+		}
+	}
+	return longest
+}
+
+func getValidBlockchains(chains []Blockchain, requiredLeadingZeros int, hashFactory HashFactory) []Blockchain {
+	result := []Blockchain{}
+
+	for _, chain := range chains {
+		if ChainIsValid(chain, requiredLeadingZeros, hashFactory) {
+			result = append(result, chain)
+		}
+	}
+
+	return result
+}
+
+func GetMostValidBlockChain(chains []Blockchain, requiredLeadingZeros int, hashFactory HashFactory) Blockchain {
+	validChains := getValidBlockchains(chains, requiredLeadingZeros, hashFactory)
+	return getLongestChain(validChains)
+}
