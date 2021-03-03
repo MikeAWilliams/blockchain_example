@@ -57,14 +57,14 @@ func Test_NewBlock(t *testing.T) {
 
 func Test_GetBlockchains(t *testing.T) {
 	testObject := &network.Network{}
-	testObject.RegisterAsBlockchainProvider(func() blockchain.BlockChain {
-		return blockchain.BlockChain{blockchain.Block{}, blockchain.Block{}, blockchain.Block{}}
+	testObject.RegisterAsBlockchainProvider(func() blockchain.Blockchain {
+		return blockchain.Blockchain{blockchain.Block{}, blockchain.Block{}, blockchain.Block{}}
 	})
-	testObject.RegisterAsBlockchainProvider(func() blockchain.BlockChain {
-		return blockchain.BlockChain{blockchain.Block{}, blockchain.Block{}}
+	testObject.RegisterAsBlockchainProvider(func() blockchain.Blockchain {
+		return blockchain.Blockchain{blockchain.Block{}, blockchain.Block{}}
 	})
-	testObject.RegisterAsBlockchainProvider(func() blockchain.BlockChain {
-		return blockchain.BlockChain{blockchain.Block{}}
+	testObject.RegisterAsBlockchainProvider(func() blockchain.Blockchain {
+		return blockchain.Blockchain{blockchain.Block{}}
 	})
 
 	result := testObject.GetBlochains()

@@ -15,7 +15,7 @@ type Block struct {
 	Hash           []byte
 }
 
-type BlockChain []Block
+type Blockchain []Block
 
 func int64ToBytes(input int64) []byte {
 	result := make([]byte, 8)

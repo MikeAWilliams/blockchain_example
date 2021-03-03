@@ -1,6 +1,8 @@
 package blockchain
 
-import "hash"
+import (
+	"hash"
+)
 
 func sliceEqual(one []byte, two []byte) bool {
 	if len(one) != len(two) {
@@ -50,6 +52,20 @@ func FirstBlockIsValid(block Block, requiredLeadingZeros int, hasher hash.Hash) 
 	}
 	if !sliceEqual(expectedHash, block.Hash) {
 		return false
+	}
+	return true
+}
+
+func ChainIsValid(chain Blockchain, requiredLeadingZeros int, hashFactory HashFactory) bool {
+	lastBlock := chain[0]
+	if !FirstBlockIsValid(lastBlock, requiredLeadingZeros, hashFactory()) {
+		return false
+	}
+	for i := 1; i < len(chain); i++ {
+		if !IsValid(lastBlock, chain[i], requiredLeadingZeros, hashFactory()) {
+			return false
+		}
+		lastBlock = chain[i]
 	}
 	return true
 }
