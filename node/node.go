@@ -4,6 +4,7 @@ import (
 	"blockchain_example/blockchain"
 	"blockchain_example/network"
 	"fmt"
+	"strings"
 )
 
 type Node struct {
@@ -43,28 +44,25 @@ func (n *Node) mine(data string) {
 
 func (n *Node) NewBlock(block blockchain.Block) {
 	go func() {
-		fmt.Printf("%v recieved block with data %v\n", n.name, block.Data)
-		if block.Index < int64(len(n.chain)) {
-			fmt.Printf("%v decided block with data %v is from the past\n", n.name, block.Data)
+		if strings.Contains(block.Data, n.name) {
 			return
 		}
 		if blockchain.IsValid(n.chain[len(n.chain)-1], block, n.requiredLeadingZeros, n.hashFactory()) {
-			fmt.Printf("%v decided block with data %v is valid\n", n.name, block.Data)
 			n.chain = append(n.chain, block)
 		} else {
-			fmt.Printf("%v decided block with data %v is not valid\n", n.name, block.Data)
+			fmt.Printf("--------- %v recieved invalid block with data %v ------- \n", n.name, block.Data)
 		}
 
 	}()
 }
 
-func (n *Node) GetBlockchain() blockchain.Blockchain {
-	return n.chain
+func (n *Node) GetBlockchain() blockchain.NamedChain {
+	return blockchain.NamedChain{Name: n.name, Chain: n.chain}
 }
 
 func (n *Node) InitilizeBlockChain() {
 	allChains := n.network.GetBlochains()
-	n.chain = blockchain.GetMostValidBlockChain(allChains, n.requiredLeadingZeros, n.hashFactory)
+	n.chain = blockchain.GetMostValidBlockChain(allChains, n.requiredLeadingZeros, n.hashFactory).Chain
 }
 
 func (n *Node) RegisterToNetwork() {

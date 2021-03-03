@@ -13,7 +13,7 @@ const RequiredLeadingZeros = 3
 
 var hashFactory blockchain.HashFactory
 
-func printChainStatus(chains []blockchain.Blockchain) {
+func printChainStatus(chains []blockchain.NamedChain) {
 	fmt.Printf("Currently number of chains %d\n", len(chains))
 	for _, chain := range chains {
 		printChain(chain)
@@ -22,9 +22,9 @@ func printChainStatus(chains []blockchain.Blockchain) {
 	printChain(blockchain.GetMostValidBlockChain(chains, RequiredLeadingZeros, hashFactory))
 }
 
-func printChain(chain blockchain.Blockchain) {
-	fmt.Printf("%d ", len(chain))
-	for _, block := range chain {
+func printChain(chain blockchain.NamedChain) {
+	fmt.Printf("%v ", chain.Name)
+	for _, block := range chain.Chain {
 		fmt.Printf("(%d, %v), ", block.Index, block.Data)
 	}
 	fmt.Println("")

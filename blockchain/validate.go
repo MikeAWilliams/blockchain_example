@@ -4,6 +4,11 @@ import (
 	"hash"
 )
 
+type NamedChain struct {
+	Name  string
+	Chain Blockchain
+}
+
 func sliceEqual(one []byte, two []byte) bool {
 	if len(one) != len(two) {
 		return false
@@ -70,21 +75,21 @@ func ChainIsValid(chain Blockchain, requiredLeadingZeros int, hashFactory HashFa
 	return true
 }
 
-func getLongestChain(validChains []Blockchain) Blockchain {
-	var longest Blockchain
+func getLongestChain(validChains []NamedChain) NamedChain {
+	var longest NamedChain
 	for _, chain := range validChains {
-		if len(chain) > len(longest) {
+		if len(chain.Chain) > len(longest.Chain) {
 			longest = chain
 		}
 	}
 	return longest
 }
 
-func getValidBlockchains(chains []Blockchain, requiredLeadingZeros int, hashFactory HashFactory) []Blockchain {
-	result := []Blockchain{}
+func getValidBlockchains(chains []NamedChain, requiredLeadingZeros int, hashFactory HashFactory) []NamedChain {
+	result := []NamedChain{}
 
 	for _, chain := range chains {
-		if ChainIsValid(chain, requiredLeadingZeros, hashFactory) {
+		if ChainIsValid(chain.Chain, requiredLeadingZeros, hashFactory) {
 			result = append(result, chain)
 		}
 	}
@@ -92,7 +97,7 @@ func getValidBlockchains(chains []Blockchain, requiredLeadingZeros int, hashFact
 	return result
 }
 
-func GetMostValidBlockChain(chains []Blockchain, requiredLeadingZeros int, hashFactory HashFactory) Blockchain {
+func GetMostValidBlockChain(chains []NamedChain, requiredLeadingZeros int, hashFactory HashFactory) NamedChain {
 	validChains := getValidBlockchains(chains, requiredLeadingZeros, hashFactory)
 	return getLongestChain(validChains)
 }

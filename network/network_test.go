@@ -57,20 +57,37 @@ func Test_NewBlock(t *testing.T) {
 
 func Test_GetBlockchains(t *testing.T) {
 	testObject := &network.Network{}
-	testObject.RegisterAsBlockchainProvider(func() blockchain.Blockchain {
-		return blockchain.Blockchain{blockchain.Block{}, blockchain.Block{}, blockchain.Block{}}
+	testObject.RegisterAsBlockchainProvider(func() blockchain.NamedChain {
+		return blockchain.NamedChain{Name: "1", Chain: blockchain.Blockchain{blockchain.Block{}, blockchain.Block{}, blockchain.Block{}}}
 	})
-	testObject.RegisterAsBlockchainProvider(func() blockchain.Blockchain {
-		return blockchain.Blockchain{blockchain.Block{}, blockchain.Block{}}
+	testObject.RegisterAsBlockchainProvider(func() blockchain.NamedChain {
+		return blockchain.NamedChain{Name: "2", Chain: blockchain.Blockchain{blockchain.Block{}, blockchain.Block{}}}
 	})
-	testObject.RegisterAsBlockchainProvider(func() blockchain.Blockchain {
-		return blockchain.Blockchain{blockchain.Block{}}
+	testObject.RegisterAsBlockchainProvider(func() blockchain.NamedChain {
+		return blockchain.NamedChain{Name: "3", Chain: blockchain.Blockchain{blockchain.Block{}}}
 	})
 
 	result := testObject.GetBlochains()
 
 	require.Equal(t, 3, len(result))
-	require.True(t, 3 == len(result[0]) || 3 == len(result[1]) || 3 == len(result[2]))
-	require.True(t, 2 == len(result[0]) || 2 == len(result[1]) || 2 == len(result[2]))
-	require.True(t, 1 == len(result[0]) || 1 == len(result[1]) || 1 == len(result[2]))
+	oneFound := false
+	twoFound := false
+	threeFound := false
+	for _, nameChain := range result {
+		if "1" == nameChain.Name {
+			require.Equal(t, 3, len(nameChain.Chain))
+			oneFound = true
+		}
+		if "2" == nameChain.Name {
+			require.Equal(t, 2, len(nameChain.Chain))
+			twoFound = true
+		}
+		if "3" == nameChain.Name {
+			require.Equal(t, 1, len(nameChain.Chain))
+			threeFound = true
+		}
+	}
+	require.True(t, oneFound)
+	require.True(t, twoFound)
+	require.True(t, threeFound)
 }
