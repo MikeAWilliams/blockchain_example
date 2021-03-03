@@ -41,7 +41,7 @@ func main() {
 		wg.Done()
 	})
 
-	node.NewNode("First", &network, RequiredLeadingZeros, hashFactory)
+	node.NewNode("Miner1", &network, RequiredLeadingZeros, hashFactory)
 
 	// let the first node get the first block.
 	network.PostNewData("a")
@@ -49,7 +49,10 @@ func main() {
 
 	printChainStatus(network.GetBlochains())
 
-	node.NewNode("Second", &network, RequiredLeadingZeros, hashFactory)
+	node.NewNode("Miner2", &network, RequiredLeadingZeros, hashFactory)
+	node.NewNode("Miner3", &network, RequiredLeadingZeros, hashFactory)
+	node.NewNode("Miner4", &network, RequiredLeadingZeros, hashFactory)
+	node.NewNode("Miner5", &network, RequiredLeadingZeros, hashFactory)
 
 	simulatedData := []string{"b", "c", "d", "e", "f", "g", "h", "i", "j"}
 	for _, data := range simulatedData {
