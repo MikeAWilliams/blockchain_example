@@ -54,3 +54,23 @@ func Test_NewBlock(t *testing.T) {
 	require.Equal(t, expectedBlock, f1Arg)
 	require.Equal(t, expectedBlock, f2Arg)
 }
+
+func Test_GetBlockchains(t *testing.T) {
+	testObject := &network.Network{}
+	testObject.RegisterAsBlockchainProvider(func() blockchain.BlockChain {
+		return blockchain.BlockChain{blockchain.Block{}, blockchain.Block{}, blockchain.Block{}}
+	})
+	testObject.RegisterAsBlockchainProvider(func() blockchain.BlockChain {
+		return blockchain.BlockChain{blockchain.Block{}, blockchain.Block{}}
+	})
+	testObject.RegisterAsBlockchainProvider(func() blockchain.BlockChain {
+		return blockchain.BlockChain{blockchain.Block{}}
+	})
+
+	result := testObject.GetBlochains()
+
+	require.Equal(t, 3, len(result))
+	require.True(t, 3 == len(result[0]) || 3 == len(result[1]) || 3 == len(result[2]))
+	require.True(t, 2 == len(result[0]) || 2 == len(result[1]) || 2 == len(result[2]))
+	require.True(t, 1 == len(result[0]) || 1 == len(result[1]) || 1 == len(result[2]))
+}

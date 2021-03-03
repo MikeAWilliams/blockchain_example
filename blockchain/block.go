@@ -15,6 +15,8 @@ type Block struct {
 	Hash           []byte
 }
 
+type BlockChain []Block
+
 func int64ToBytes(input int64) []byte {
 	result := make([]byte, 8)
 	binary.LittleEndian.PutUint64(result, uint64(input))

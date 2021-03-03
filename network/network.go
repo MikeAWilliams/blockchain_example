@@ -7,10 +7,12 @@ import (
 
 type NewDataCallback func(string)
 type NewBlockCallback func(blockchain.Block)
+type GetBlockchainCallback func() blockchain.BlockChain
 
 type Network struct {
 	newDataSubscribers  []NewDataCallback
 	newBlockSubscribers []NewBlockCallback
+	blockchainProviders []GetBlockchainCallback
 }
 
 func (n *Network) PostNewData(data string) {
@@ -37,4 +39,21 @@ func (n *Network) PostNewBlock(data blockchain.Block) {
 
 func (n *Network) SubscribeForNewBlock(callback NewBlockCallback) {
 	n.newBlockSubscribers = append(n.newBlockSubscribers, callback)
+}
+
+func (n *Network) RegisterAsBlockchainProvider(callback GetBlockchainCallback) {
+	n.blockchainProviders = append(n.blockchainProviders, callback)
+}
+
+func (n *Network) GetBlochains() []blockchain.BlockChain {
+	result := []blockchain.BlockChain{}
+
+	rand.Shuffle(len(n.blockchainProviders), func(i, j int) {
+		n.blockchainProviders[i], n.blockchainProviders[j] = n.blockchainProviders[j], n.blockchainProviders[i]
+	})
+	for _, callback := range n.blockchainProviders {
+		result = append(result, callback())
+	}
+
+	return result
 }
