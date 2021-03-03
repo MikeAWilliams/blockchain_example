@@ -42,6 +42,10 @@ func (n *Node) mine(data string) {
 func (n *Node) NewBlock(block blockchain.Block) {
 	go func() {
 		fmt.Printf("%v recieved block with data %v\n", n.name, block.Data)
+		if block.Index < int64(len(n.chain)) {
+			fmt.Printf("%v decided block with data %v is from the past\n", n.name, block.Data)
+			return
+		}
 		if blockchain.IsValid(n.chain[len(n.chain)-1], block, n.requiredLeadingZeros, n.hashFactory()) {
 			fmt.Printf("%v decided block with data %v is valid\n", n.name, block.Data)
 			n.chain = append(n.chain, block)
