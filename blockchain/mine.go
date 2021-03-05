@@ -1,6 +1,10 @@
 package blockchain
 
-import "hash"
+import (
+	"hash"
+	"math/rand"
+	"time"
+)
 
 func HashIsHardEnough(hash []byte, requiredLeadingZeros int) bool {
 	if len(hash) < requiredLeadingZeros {
@@ -28,4 +32,13 @@ func MineBlock(previousHash []byte, previousIndex int64, data string, requiredLe
 		}
 		miningVariable++
 	}
+}
+
+func MineBlockWithSleep(previousHash []byte, previousIndex int64, data string, requiredLeadingZeros int, hashFactory HashFactory) (Block, error) {
+	result, err := NewBlock(previousHash, previousIndex, rand.Int63(), data, hashFactory())
+	if nil != err {
+		return Block{}, err
+	}
+	time.Sleep(time.Duration(rand.Intn(20000))*time.Microsecond + time.Second)
+	return result, nil
 }
