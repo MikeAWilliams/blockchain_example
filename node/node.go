@@ -37,7 +37,7 @@ func (n *Node) mine(data string) {
 		previousHash = n.chain[len(n.chain)-1].Hash
 	}
 
-	newBlock, _ := blockchain.MineBlockWithSleep(previousHash, int64(len(n.chain)-1), data, n.requiredLeadingZeros, n.hashFactory)
+	newBlock, _ := blockchain.MineBlockWithSleep(previousHash, int64(len(n.chain)-1), data, 5, 25, n.hashFactory)
 	//newBlock, _ := blockchain.MineBlock(previousHash, int64(len(n.chain)-1), data, n.requiredLeadingZeros, n.hashFactory)
 	if int64(len(n.chain)) > newBlock.Index {
 		return

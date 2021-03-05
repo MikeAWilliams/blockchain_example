@@ -34,11 +34,12 @@ func MineBlock(previousHash []byte, previousIndex int64, data string, requiredLe
 	}
 }
 
-func MineBlockWithSleep(previousHash []byte, previousIndex int64, data string, requiredLeadingZeros int, hashFactory HashFactory) (Block, error) {
+func MineBlockWithSleep(previousHash []byte, previousIndex int64, data string, minSeconds int, maxSeconds int, hashFactory HashFactory) (Block, error) {
 	result, err := NewBlock(previousHash, previousIndex, rand.Int63(), data, hashFactory())
 	if nil != err {
 		return Block{}, err
 	}
-	time.Sleep(time.Duration(rand.Intn(20000))*time.Microsecond + 5*time.Second)
+	secondsRange := maxSeconds - minSeconds
+	time.Sleep(time.Duration(rand.Intn(secondsRange*1000))*time.Microsecond + time.Duration(minSeconds)*time.Second)
 	return result, nil
 }
