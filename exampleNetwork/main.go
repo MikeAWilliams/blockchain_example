@@ -19,7 +19,8 @@ func printChainStatus(chains []blockchain.NamedChain) {
 		printChain(chain)
 	}
 	fmt.Println("Most valid chain")
-	printChain(blockchain.GetMostValidBlockChain(chains, RequiredLeadingZeros, hashFactory))
+	//printChain(blockchain.GetMostValidBlockChain(chains, RequiredLeadingZeros, hashFactory))
+	printChain(blockchain.GetMostValidBlockChain(chains, 0, hashFactory))
 }
 
 func printChain(chain blockchain.NamedChain) {
