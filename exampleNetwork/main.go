@@ -37,8 +37,12 @@ func main() {
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)
+	wgOnce := sync.Once{}
 	network.SubscribeForNewBlock(func(_ blockchain.Block) {
-		wg.Done()
+		// in the mining below sometimes more than one miner will post a block
+		// and then the wg.Done would get called more than once and go panics
+		// so lets just ignore that problem here by using once
+		wgOnce.Do(wg.Done)
 	})
 
 	node.NewNode("Miner1", &network, RequiredLeadingZeros, hashFactory)
@@ -58,6 +62,7 @@ func main() {
 	for _, data := range simulatedData {
 		fmt.Printf("\nSimulator sending data %v\n", data)
 		wg.Add(1)
+		wgOnce = sync.Once{}
 		network.PostNewData(data)
 		wg.Wait()
 

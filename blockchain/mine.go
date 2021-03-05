@@ -39,6 +39,6 @@ func MineBlockWithSleep(previousHash []byte, previousIndex int64, data string, r
 	if nil != err {
 		return Block{}, err
 	}
-	time.Sleep(time.Duration(rand.Intn(20000))*time.Microsecond + time.Second)
+	time.Sleep(time.Duration(rand.Intn(20000))*time.Microsecond + 5*time.Second)
 	return result, nil
 }

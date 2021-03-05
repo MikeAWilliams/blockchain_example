@@ -16,9 +16,9 @@ type Node struct {
 }
 
 func NewNode(name string, network *network.Network, requiredZeros int, hashFactory blockchain.HashFactory) Node {
-	result := Node{network: network, name: name, requiredLeadingZeros: requiredZeros, hashFactory: hashFactory}
+	//result := Node{network: network, name: name, requiredLeadingZeros: requiredZeros, hashFactory: hashFactory}
 	// since I am using the sleep mining there is no garontee of the leading zeros so setting it to 0 will let validate work
-	//result := Node{network: network, name: name, requiredLeadingZeros: 0, hashFactory: hashFactory}
+	result := Node{network: network, name: name, requiredLeadingZeros: 0, hashFactory: hashFactory}
 	result.chain = blockchain.Blockchain{}
 	result.RegisterToNetwork()
 	return result
@@ -37,8 +37,8 @@ func (n *Node) mine(data string) {
 		previousHash = n.chain[len(n.chain)-1].Hash
 	}
 
-	//newBlock, _ := blockchain.MineBlockWithSleep(previousHash, int64(len(n.chain)-1), data, n.requiredLeadingZeros, n.hashFactory)
-	newBlock, _ := blockchain.MineBlock(previousHash, int64(len(n.chain)-1), data, n.requiredLeadingZeros, n.hashFactory)
+	newBlock, _ := blockchain.MineBlockWithSleep(previousHash, int64(len(n.chain)-1), data, n.requiredLeadingZeros, n.hashFactory)
+	//newBlock, _ := blockchain.MineBlock(previousHash, int64(len(n.chain)-1), data, n.requiredLeadingZeros, n.hashFactory)
 	if int64(len(n.chain)) > newBlock.Index {
 		return
 	}
@@ -47,17 +47,14 @@ func (n *Node) mine(data string) {
 }
 
 func (n *Node) NewBlock(block blockchain.Block) {
-	go func() {
-		if strings.Contains(block.Data, n.name) {
-			return
-		}
-		if blockchain.IsValid(n.chain[len(n.chain)-1], block, n.requiredLeadingZeros, n.hashFactory()) {
-			n.chain = append(n.chain, block)
-		} else {
-			fmt.Printf("--------- %v recieved invalid block with data %v ------- \n", n.name, block.Data)
-		}
-
-	}()
+	if strings.Contains(block.Data, n.name) {
+		return
+	}
+	if blockchain.IsValid(n.chain[len(n.chain)-1], block, n.requiredLeadingZeros, n.hashFactory()) {
+		n.chain = append(n.chain, block)
+	} else {
+		fmt.Printf("--------- %v recieved invalid block with data %v ------- \n", n.name, block.Data)
+	}
 }
 
 func (n *Node) GetBlockchain() blockchain.NamedChain {
